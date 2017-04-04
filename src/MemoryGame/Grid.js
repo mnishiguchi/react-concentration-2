@@ -1,11 +1,11 @@
 import React      from 'react'
 
 class Grid extends React.Component {
-  constructor( props ) {
-    super( props )
+  constructor(props) {
+    super(props)
 
     this.state = {
-      isFlipped: false,
+      isFlipped: props.isFlipped,
     }
   }
 

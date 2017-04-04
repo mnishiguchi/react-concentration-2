@@ -12,55 +12,83 @@ class MemoryGame extends React.Component {
     super( props )
 
     this.state = {
-      selectedIds: [],
-      foundPairs : [],
+      selectedId: null,
+      foundPairs: [],
     }
 
-    this._deck  = _.shuffle(CARDS)
-    this._pairs = _.chain(CARDS).shuffle().chunk(2).value()
-    this._icons = this.mapIconsToIds()
+    this.deck  = _.shuffle(CARDS)
+    this.pairs = _.chain(CARDS).shuffle().chunk(2).value()
+    this.icons = this.mapIconsToIds()
   }
 
   componentWillMount() {
-    this._emitter = new EventEmitter()
-
-    this._emitter.addListener('Grid:clicked', ({ id }) => {
-      // TODO
-      // 1. Push the passed-in id to selectedIds
-      // 2. Judge the pair when selectedIds.length == 2
-      console.debug(`Grid:clicked:${id}`)
-    })
+    this.emitter = new EventEmitter()
+    this.listenForChildren()
   }
 
   componentWillUnmount() {
-    this._emitter.removeAllListeners();
+    this.emitter.removeAllListeners();
   }
 
   render() {
-    console.debug(this)
+    // console.debug(_.pick(this, 'deck', 'pairs', 'icons', 'state'))
+    console.debug(this.state)
 
     return (
       <section className="MemoryGame">
         {
-          this._deck.map(id => <Grid id={id} icon={this._icons[id]} emitter={this._emitter} key={id} />)
+          this.deck.map(id => <Grid id={id} icon={this.icons[ id ]} isFlipped={this.isFaceUp(id)} emitter={this.emitter} key={id} />)
         }
       </section>
     )
   }
 
+  listenForChildren() {
+    this.emitter.addListener('Grid:clicked', ({ id }) => {
+      console.debug(`Grid:clicked:${id}`)
+      const { selectedId } = this.state
+
+      // Ignore a click on the same item.
+      if (selectedId === id) { return }
+
+      if (selectedId) {
+        console.info(this.judgePair([ selectedId, id ]) ? 'matched' : 'not matched')
+
+        const pair = [ selectedId, id ]
+        if (this.judgePair(pair)) {
+          this.setState((prevState, props) => {
+            return { selectedId: null, foundPairs: prevState.foundPairs.concat([ pair ]) }
+          })
+        } else {
+          this.setState({ selectedId: null })
+        }
+      } else {
+        this.setState({ selectedId: id })
+      }
+    })
+  }
+
+  isFaceDown(id) {
+    return _.chain(this.deck).difference(_.flatten(this.state.foundPairs)).difference([ this.state.selectedId ]).value()
+  }
+
+  isFaceUp(id) {
+    return !this.isFaceDown(id)
+  }
+
   mapIconsToIds() {
-    return this._pairs.reduce((accObj, pair, index) => {
-      pair.forEach(icon => accObj[icon] = index)
+    return this.pairs.reduce((accObj, pair, index) => {
+      pair.forEach(icon => accObj[ icon ] = index)
       return accObj
     }, {})
   }
 
   judgePair(selectedIds) {
-    const result = this._pairs.map(pair => {
+    const result = this.pairs.map(pair => {
       return _.isEqual(pair.sort(), selectedIds.sort())
     })
 
-    return _.any(result)
+    return _.some(result)
   }
 }
 
