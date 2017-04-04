@@ -1,6 +1,6 @@
-import React     from 'react'
-import ReactDOM  from 'react-dom'
-import AppLayout from './AppLayout'
+import React      from 'react'
+import ReactDOM   from 'react-dom'
+import AppLayout  from './AppLayout'
 import MemoryGame from './MemoryGame'
 import './index.css'
 
