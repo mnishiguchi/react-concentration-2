@@ -1,0 +1,25 @@
+.MemoryGame {
+  display: flex;
+}
+
+.MemoryGame .row {
+  flex: 1;
+}
+
+.MemoryGame .left,
+.MemoryGame .right {
+  flex: 1;
+}
+
+.Grid {
+  background: #666;
+  color: #666;
+  border: 2px solid #fff;
+  padding: 2rem;
+  flex: 1;
+}
+
+.Grid.flipped {
+  background: #ccc;
+  color: #000;
+}

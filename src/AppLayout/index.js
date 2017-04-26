@@ -1,6 +1,6 @@
 import React from 'react'
 import logo from '../assets/logo.svg'
-import './AppLayout.css'
+import './index.css'
 
 const AppLayout = (props) => {
   return (

@@ -2,48 +2,70 @@ import React            from 'react'
 import { EventEmitter } from 'fbemitter'
 import _                from 'lodash'
 import Grid             from './Grid'
+import faNames          from './fa-names'
+import './index.css'
 
-const CARDS = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+const CARDS = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]    // Card ids
+const ICONS = _.chain(faNames).shuffle().take(8).value() // Randomly selected font-awesome icon names
 
-window._ = _
+window._ = _ // To play with lodash in console
 
 class MemoryGame extends React.Component {
   constructor( props ) {
     super( props )
 
     this.state = {
-      selectedId: null,
-      foundPairs: [],
+      selectedId: null, // The id of the first selected card of each turn
+      foundPairs: [],   // Remember all the found pairs
     }
-
-    this.deck  = _.shuffle(CARDS)
-    this.pairs = _.chain(CARDS).shuffle().chunk(2).value()
-    this.icons = this.mapIconsToIds()
   }
 
   componentWillMount() {
     this.emitter = new EventEmitter()
-    this.listenForChildren()
+    this.subscribeEvents()
+
+    this.pairs     = _.chain(CARDS).shuffle().chunk(2).value()  // An array of pairs
+    this.iconNames = this.mapCardIdToIconId()                   // A hash map of id => icon
   }
 
   componentWillUnmount() {
-    this.emitter.removeAllListeners();
+    this.emitter.removeAllListeners()
   }
 
   render() {
-    // console.debug(_.pick(this, 'deck', 'pairs', 'icons', 'state'))
+    // console.debug(_.pick(this, 'deck', 'pairs', 'iconNames', 'state'))
     console.debug(this.state)
 
     return (
       <section className="MemoryGame">
+        <div className="left"></div>
         {
-          this.deck.map(id => <Grid id={id} icon={this.icons[ id ]} isFlipped={this.isFaceUp(id)} emitter={this.emitter} key={id} />)
+          _.chunk(CARDS, 4).map((row, i) => {
+            return (
+              <div className="row" key={i}>
+                {
+                  row.map(id => {
+                    return (
+                      <Grid
+                        id={id}
+                        iconName={this.iconNames[ id ]}
+                        isFlipped={this.isFaceUp(id)}
+                        emitter={this.emitter}
+                        key={id}
+                      />
+                    )
+                  })
+                }
+              </div>
+            )
+          })
         }
+        <div className="right"></div>
       </section>
     )
   }
 
-  listenForChildren() {
+  subscribeEvents() {
     this.emitter.addListener('Grid:clicked', ({ id }) => {
       console.debug(`Grid:clicked:${id}`)
       const { selectedId } = this.state
@@ -52,12 +74,16 @@ class MemoryGame extends React.Component {
       if (selectedId === id) { return }
 
       if (selectedId) {
-        console.info(this.judgePair([ selectedId, id ]) ? 'matched' : 'not matched')
-
         const pair = [ selectedId, id ]
         if (this.judgePair(pair)) {
+
+          console.info('matched')
+          
           this.setState((prevState, props) => {
-            return { selectedId: null, foundPairs: prevState.foundPairs.concat([ pair ]) }
+            return {
+              selectedId: null,
+              foundPairs: prevState.foundPairs.concat([ pair ])
+            }
           })
         } else {
           this.setState({ selectedId: null })
@@ -69,16 +95,19 @@ class MemoryGame extends React.Component {
   }
 
   isFaceDown(id) {
-    return _.chain(this.deck).difference(_.flatten(this.state.foundPairs)).difference([ this.state.selectedId ]).value()
+    return _.chain(CARDS).difference(_.flatten(this.state.foundPairs)).difference([ this.state.selectedId ]).value()
   }
 
   isFaceUp(id) {
     return !this.isFaceDown(id)
   }
 
-  mapIconsToIds() {
-    return this.pairs.reduce((accObj, pair, index) => {
-      pair.forEach(icon => accObj[ icon ] = index)
+  // Give each pair a matching icon.
+  mapCardIdToIconId() {
+    return this.pairs.reduce((accObj, pair, iconIndex) => {
+      pair.forEach(part => {
+        accObj[ part ] = ICONS[ iconIndex ]
+      })
       return accObj
     }, {})
   }

@@ -1,4 +1,5 @@
 import React      from 'react'
+import classNames from 'classnames'
 
 class Grid extends React.Component {
   constructor(props) {
@@ -10,12 +11,16 @@ class Grid extends React.Component {
   }
 
   render() {
-    const { icon } = this.props
+    const { iconName } = this.props
     const { isFlipped } = this.state
 
+    const GridClassNames = classNames('Grid', {
+      'flipped': isFlipped
+    })
+
     return (
-      <div className="Grid" onClick={e => this.handleClick(e)} style={{ background: isFlipped ? '#ccc' : '#666' }}>
-        {icon}
+      <div className={GridClassNames} onClick={e => this.handleClick(e)}>
+        <i className={`fa fa-${iconName} fa-2x`} aria-hidden="true"></i>
       </div>
     )
   }
