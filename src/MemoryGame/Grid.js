@@ -4,23 +4,26 @@ import Cell             from './Cell'
 
 class Grid extends React.Component {
   render() {
-    const { cards, iconNames, isFaceUp, emitter } = this.props
+    const { cells, emitter } = this.props
+
+    console.info(cells)
 
     return (
       <div className="Grid">
         {
-          _.chunk(cards, 4).map((row, i) => {
+          _.chunk(cells, 4).map((row, i) => {
             return (
               <div className="row" key={i}>
                 {
-                  row.map(id => {
+                  row.map(cell => {
                     return (
                       <Cell
-                        id={id}
-                        iconName={iconNames[ id ]}
-                        isFlipped={isFaceUp(id)}
+                        id={cell.id}
+                        iconName={cell.iconName}
+                        isFlipped={cell.isFlipped}
+                        isFound={cell.isFound}
                         emitter={emitter}
-                        key={id}
+                        key={cell.id}
                       />
                     )
                   })
