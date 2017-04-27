@@ -1,38 +1,36 @@
-import React      from 'react'
-import classNames from 'classnames'
+import React            from 'react'
+import _                from 'lodash'
+import Cell             from './Cell'
 
 class Grid extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      isFlipped: props.isFlipped,
-    }
-  }
-
   render() {
-    const { iconName } = this.props
-    const { isFlipped } = this.state
-
-    const GridClassNames = classNames('Grid', {
-      'flipped': isFlipped
-    })
+    const { cards, iconNames, isFaceUp, emitter } = this.props
 
     return (
-      <div className={GridClassNames} onClick={e => this.handleClick(e)}>
-        <i className={`fa fa-${iconName} fa-2x`} aria-hidden="true"></i>
+      <div className="Grid">
+        {
+          _.chunk(cards, 4).map((row, i) => {
+            return (
+              <div className="row" key={i}>
+                {
+                  row.map(id => {
+                    return (
+                      <Cell
+                        id={id}
+                        iconName={iconNames[ id ]}
+                        isFlipped={isFaceUp(id)}
+                        emitter={emitter}
+                        key={id}
+                      />
+                    )
+                  })
+                }
+              </div>
+            )
+          })
+        }
       </div>
     )
-  }
-
-  handleClick(e) {
-    const { id, emitter } = this.props
-
-    this.setState((prevState, props) => {
-      return { isFlipped: !prevState.isFlipped }
-    })
-
-    emitter.emit('Grid:clicked', { id })
   }
 }
 

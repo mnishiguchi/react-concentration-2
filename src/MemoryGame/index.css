@@ -1,17 +1,16 @@
 .MemoryGame {
   display: flex;
-}
-
-.MemoryGame .row {
-  flex: 1;
-}
-
-.MemoryGame .left,
-.MemoryGame .right {
-  flex: 1;
+  align-items: center;
+  justify-content: center;
 }
 
 .Grid {
+  display: flex;
+  width: 400px;
+  height: 400px;
+}
+
+.Cell {
   background: #666;
   color: #666;
   border: 2px solid #fff;
@@ -19,7 +18,7 @@
   flex: 1;
 }
 
-.Grid.flipped {
+.Cell.flipped {
   background: #ccc;
   color: #000;
 }
