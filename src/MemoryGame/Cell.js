@@ -4,7 +4,7 @@ import classNames from 'classnames'
 class Cell extends React.Component {
   render() {
     const { isFlipped, isFound, iconName } = this.props
-    
+
     const cellClassNames = classNames('Cell', {
       'flipped': isFlipped,
       'found': isFound,

@@ -5,9 +5,7 @@ import Cell             from './Cell'
 class Grid extends React.Component {
   render() {
     const { cells, emitter } = this.props
-
-    console.info(cells)
-
+    
     return (
       <div className="Grid">
         {

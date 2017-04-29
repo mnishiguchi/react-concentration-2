@@ -22,3 +22,7 @@
   background: #ccc;
   color: #000;
 }
+
+.Cell.found {
+  opacity: 0;
+}
